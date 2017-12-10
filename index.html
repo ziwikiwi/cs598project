@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 <html>
  <head>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -10,13 +10,19 @@
 
     var g = new Graph();
 
-                g.addEdge("cherry", "apple");
-                g.addEdge("strawberry", "cherry");
-                g.addEdge("strawberry", "apple");
-                g.addEdge("strawberry", "tomato");
-                g.addEdge("tomato", "apple");
-                g.addEdge("cherry", "kiwi");
-                g.addEdge("tomato", "kiwi");
+    			g.addNode("apple");
+    			g.addNode("cherry");
+    			g.addNode("strawberry");
+    			g.addNode("tomato");
+    			g.addNode("kiwi");
+
+                g.addEdge("cherry", "apple", {label: 10, directed: true});
+                g.addEdge("strawberry", "cherry", {directed: true});
+                g.addEdge("strawberry", "apple", {directed: true});
+               // g.addEdge("strawberry", "tomato");
+               // g.addEdge("tomato", "apple");
+                g.addEdge("cherry", "kiwi", {directed: true});
+               // g.addEdge("tomato", "kiwi");
 
                 /* layout the graph using the Spring layout implementation */
                 var layouter = new Graph.Layout.Spring(g);
@@ -40,11 +46,9 @@
         </div>
  </body>
 </html>
-=======
 <!DOCTYPE html>
 <html>
   <body>
     <div id="paper"></div>
   </body>
 </html>
->>>>>>> 530262b6d119e9890907d02e8e9ac2ffd7c6a0e2

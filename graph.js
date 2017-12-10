@@ -180,8 +180,8 @@ Graph.prototype = {
     },
 
     addEdge: function(source, target, style) {
-        var s = this.addNode(source);
-        var t = this.addNode(target);
+        var s = this.nodes[source];
+        var t = this.nodes[target];
         var edge = this.edgeFactory.build(s, t);
         jQuery.extend(edge.style,style);
         s.edges.push(edge);

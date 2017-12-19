@@ -3,9 +3,34 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
  <script src="graph.js"></script>
+ <script src="dynamic_tree.js"></script>
  <script src="dracula.min.js"></script>
   <script type="text/javascript">
    window.onload = function() {
+    var n1 = new Node(null);
+    var n2 = new Node(n1);
+    var e1 = new Edge(20, n1, n2);
+    n2.setEdge(e1);
+
+    var n3 = new Node(null);
+    var n4 = new Node(n3);
+    var e2 = new Edge(50, n3, n4);
+    n4.setEdge(e2);
+
+    var path = new Path();
+    path.addNode(n1);
+    path.addNode(n2);
+
+    var path2 = new Path();
+    path2.addNode(n3);
+    path2.addNode(n4);
+
+    var pathCollection = new PathCollection();
+    pathCollection.addPath(path);
+    pathCollection.addPath(path2);
+    pathCollection.concatenate(path, path2, 30);
+    console.log(pathCollection.split(n3));
+    console.log(pathCollection)
 
     var g = new Graph();
 

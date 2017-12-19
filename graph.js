@@ -160,6 +160,7 @@ EdgeFactory.prototype = {
 var Graph = function() {
     this.nodes = {};
     this.edges = [];
+    this.edgestrings = {};
     this.snapshots = []; // previous graph states TODO to be implemented
     this.edgeFactory = new EdgeFactory();
 };
@@ -184,12 +185,15 @@ Graph.prototype = {
     },
 
     addEdge: function(source, target, style) {
+        if (this.edgestrings[source + '' + target])
+            return;
         var s = this.nodes[source];
         var t = this.nodes[target];
-        var edge = this.edgeFactory.build(s, t);
+        var edge = this.edgeFactory.build(s, t); 
         jQuery.extend(edge.style,style);
         s.edges.push(edge);
         this.edges.push(edge);
+        this.edgestrings[source + '' + target] = 1;
         // NOTE: Even directed edges are added to both nodes.
         t.edges.push(edge);
     },
@@ -318,29 +322,18 @@ Graph.Renderer.Raphael.prototype = {
         return [point[0]+dx, point[1]+dy];
     },
 
-    drawTree: function(root) {
-
-        var tree = this.graph;
-        rootNode = tree.findNode(root);
-        if (rootNode.edges.length > 1) {
-            for (var i = 0; i < rootNode.edges.length; i++) {
-                var edge = rootNode.edges[i];
-                if (edge.source.id == root) {
-                    this.drawTree(edge.target.id);
-                }
-            }
-        }
-        
-        /*
-        for (var i = 0; i < this.graph.edges.length; i++) {
-            this.drawEdge(this.graph.edges[i]);
-        }
-        */
-    },
-
     draw: function() {
         this.factorX = (this.width - 2 * this.radius) / (this.graph.layoutMaxX - this.graph.layoutMinX);
         this.factorY = (this.height - 2 * this.radius) / (this.graph.layoutMaxY - this.graph.layoutMinY);
+        for (i in this.graph.nodes) {
+            this.drawNode(this.graph.nodes[i]);
+        }
+        for (var i = 0; i < this.graph.edges.length; i++) {
+            this.drawEdge(this.graph.edges[i]);
+        }
+    },
+
+    redraw: function() {
         for (i in this.graph.nodes) {
             this.drawNode(this.graph.nodes[i]);
         }

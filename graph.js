@@ -185,19 +185,17 @@ Graph.prototype = {
     },
 
     addEdge: function(source, target, style) {
-        if (this.edgestrings[source + '' + target])
-            return;
         var s = this.nodes[source];
         var t = this.nodes[target];
         var edge = this.edgeFactory.build(s, t); 
         jQuery.extend(edge.style,style);
         s.edges.push(edge);
         this.edges.push(edge);
-        this.edgestrings[source + '' + target] = 1;
         // NOTE: Even directed edges are added to both nodes.
         t.edges.push(edge);
+        return edge;
     },
-    
+
     /* TODO to be implemented
      * Preserve a copy of the graph state (nodes, positions, ...)
      * @comment     a comment describing the state
@@ -390,7 +388,7 @@ Graph.Renderer.Raphael.prototype = {
         node.hidden || shape.show();
         node.shape = shape;
     },
-    drawEdge: function(edge) {
+    drawEdge: function(edge, refresh=false) {
         /* if this edge already exists the other way around and is undirected */
         if(edge.backedge)
             return;

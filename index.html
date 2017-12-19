@@ -8,15 +8,13 @@
  <script src="dracula.min.js"></script>
  <script src="graph_vis.js"></script>
 
-<script type="text/javascript">
-  
-   
-  </script>
  </head>
  <body>
    <div>
           <button id="draw" onclick="pathStuff()">Draw graphs</button>
-          <button id="addPath" onclick="addPath(0,2)">Add Path</button>
+          <input type="text" id="numPaths" value="0">
+          <button id="addPath" onclick="addPath(0,parseInt(document.getElementById('numPaths').value))">Add Path</button>
+          <button id="addPath" onclick="buildTree(3,2)">Initialize Tree</button>
   </div>
 
  </body>

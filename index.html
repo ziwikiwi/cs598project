@@ -10,20 +10,20 @@
     var n1 = new Node(null);
     var n2 = new Node(n1);
     var e1 = new Edge(20, n1, n2);
-    n2.setEdge(e1);
 
     var n3 = new Node(null);
     var n4 = new Node(n3);
     var e2 = new Edge(50, n3, n4);
-    n4.setEdge(e2);
 
     var path = new Path();
     path.addNode(n1);
     path.addNode(n2);
+    path.addEdge(e1);
 
     var path2 = new Path();
     path2.addNode(n3);
     path2.addNode(n4);
+    path2.addEdge(e2);
 
     var pathCollection = new PathCollection();
     pathCollection.addPath(path);

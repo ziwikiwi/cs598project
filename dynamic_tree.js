@@ -1,13 +1,8 @@
 var id = 0;
 
 var Node = function(parent) {
-    this.parent = parent
-    this.parentEdge = null
     this.id = id;
     id++ ;
-    this.setEdge = function(edge) {
-      this.parentEdge = edge;
-    }
 }
 
 var Edge = function(cost, node1, node2) {
@@ -17,11 +12,27 @@ var Edge = function(cost, node1, node2) {
 
 var Path = function() {
     this.nodes = []
+    this.edges = []
     this.id = id;
     id++;
     this.addNode = function(node) {
         this.nodes.push(node);
     };
+
+    this.addEdge = function(edge) {
+        this.edges.push(edge);
+    };
+
+    this.getEdgeIndex = function(node1, node2) {
+      for(var i = 0; i < this.edges.length; i++)
+      {
+        if(this.edges[i].nodes[0].id === node1.id && this.edges[i].nodes[1].id === node2.id)
+          return i
+        if(this.edges[i].nodes[1].id === node1.id && this.edges[i].nodes[0].id === node2.id)
+          return i
+      }
+      return -1
+    }
 
     this.checkNode = function(node) {
       for(var i = 0; i < this.nodes.length; i++){
@@ -87,61 +98,52 @@ var PathCollection = function() {
   }
 
   this.before = function(node) {
-    return node.parent;
+    path = this.path(node);
+    index = path.getIndex(node);
+    if(index === 0)
+      return null;
+    return path.nodes[index - 1];
   }
 
   this.after = function(node) {
-    curr_path = this.path(node);
-    if(node.id === curr_path.nodes[curr_path.nodes.length - 1].id)
+    path = this.path(node);
+    index = path.getIndex(node);
+    if(index === path.nodes.length - 1)
       return null;
-    for(var i=0; i < curr_path.nodes.length; i++){
-      if(node.id === curr_path.nodes[i].id)
-        return curr_path.nodes[i + 1];
-    }
-
-    return null;
+    return path.nodes[index + 1];
   }
 
   this.pcost = function(node) {
     after_node = this.after(node);
-    return after_node.parentEdge.cost;
+    path = this.path(node)
+    return path.edges[path.getEdgeIndex(node, after_node)].cost;
   }
 
   this.pmincost = function(path) {
     min_cost = 9007199254740992;  // INT.max
-    for(var i=0; i < path.nodes.length; i++){
-      if(path.nodes[i].parentEdge){
-        cost = path.nodes[i].parentEdge.cost
-        if(cost < min_cost)
-          min_cost = cost;
-      }
+    for(var i=0; i < path.edges.length; i++){
+      cost = path.edges[i].cost
+      if(cost < min_cost)
+        min_cost = cost;
     }
     return min_cost
   }
 
   this.pupdate = function(path, x) {
-    for(var i=0; i < path.nodes.length; i++){
-      if(path.nodes[i].parentEdge){
-        path.nodes[i].parentEdge.cost += x;
-      }
+    for(var i=0; i < path.edges.length; i++){
+      path.edges[i].cost += x;
     }
   }
 
   this.reverse = function(path) {
-    for(var i=0; i < path.nodes.length - 1; i++){
-      path.nodes[i].parentEdge = path.nodes[i + 1].parentEdge
-      path.nodes[i].parent = path.nodes[i + 1]
-    }
-    path.nodes[path.nodes.length - 1].parent = null
-    path.nodes[path.nodes.length - 1].parentEdge = null
     path.nodes.reverse();
   }
 
   this.concatenate = function(path1, path2, x) {
     new_edge = new Edge(x, this.tail(path1), this.head(path2));
-    this.head(path2).setEdge(new_edge);
-    this.head(path2).parent = this.tail(path1);
     path1.nodes = path1.nodes.concat(path2.nodes);
+    path1.edges = path1.edges.concat(path2.edges);
+    path1.addEdge(new_edge)
     this.paths.splice(this.getIndex(path2), 1); // remove path2
     return path1;
   }
@@ -155,9 +157,12 @@ var PathCollection = function() {
     }
     else {
       endIndex1 = path.getIndex(this.before(node))
+      edgeIndex = path.getEdgeIndex(node, this.before(node))
       path1 = new Path()
       path1.nodes = path.nodes.slice(0, endIndex1 + 1)
-      x = node.parentEdge.cost;
+      path1.edges = path.edges.slice(0, edgeIndex -1)
+      x = path.edges[edgeIndex].cost;
+      path.edges.splice(edgeIndex, 1)
       this.paths.push(path1)
     }
 
@@ -167,11 +172,12 @@ var PathCollection = function() {
     }
     else {
       startIndex2 = path.getIndex(this.after(node));
+      edgeIndex = path.getEdgeIndex(node, this.after(node))
       path2 = new Path()
       path2.nodes = path.nodes.slice(startIndex2);
-      y = this.after(node).parentEdge.cost;
-      path2.nodes[0].parent = null
-      path2.nodes[0].parentEdge = null;
+      path2.edges = path.edges.slice(edgeIndex + 1);
+      y = path.edges[edgeIndex].cost;
+      path.edges.splice(edgeIndex, 1)
       this.paths.push(path2)
     }
 

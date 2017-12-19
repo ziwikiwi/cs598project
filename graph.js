@@ -179,6 +179,10 @@ Graph.prototype = {
         return this.nodes[id];
     },
 
+    findNode: function(id) {
+        return this.nodes[id];
+    },
+
     addEdge: function(source, target, style) {
         var s = this.nodes[source];
         var t = this.nodes[target];
@@ -312,6 +316,26 @@ Graph.Renderer.Raphael.prototype = {
         var dx = length * Math.cos(angle);
         var dy = length * Math.sin(angle);
         return [point[0]+dx, point[1]+dy];
+    },
+
+    drawTree: function(root) {
+
+        var tree = this.graph;
+        rootNode = tree.findNode(root);
+        if (rootNode.edges.length > 1) {
+            for (var i = 0; i < rootNode.edges.length; i++) {
+                var edge = rootNode.edges[i];
+                if (edge.source.id == root) {
+                    this.drawTree(edge.target.id);
+                }
+            }
+        }
+        
+        /*
+        for (var i = 0; i < this.graph.edges.length; i++) {
+            this.drawEdge(this.graph.edges[i]);
+        }
+        */
     },
 
     draw: function() {

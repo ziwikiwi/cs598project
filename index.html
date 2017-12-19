@@ -1,54 +1,17 @@
 <html>
  <head>
+  <link rel="stylesheet" type="text/css" href="theme.css">
  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
  <script src="graph.js"></script>
  <script src="dracula.min.js"></script>
-  <script type="text/javascript">
-   window.onload = function() {
-
-    var g = new Graph();
-
-    			g.addNode("apple");
-    			g.addNode("cherry");
-    			g.addNode("strawberry");
-    			g.addNode("tomato");
-    			g.addNode("kiwi");
-
-                g.addEdge("cherry", "apple", {label: 10, directed: true});
-                g.addEdge("strawberry", "cherry", {directed: true});
-                g.addEdge("strawberry", "apple", {directed: true});
-               // g.addEdge("strawberry", "tomato");
-               // g.addEdge("tomato", "apple");
-                g.addEdge("cherry", "kiwi", {directed: true});
-               // g.addEdge("tomato", "kiwi");
-
-                /* layout the graph using the Spring layout implementation */
-                var layouter = new Graph.Layout.Spring(g);
-                layouter.layout();
-
-                /* draw the graph using the RaphaelJS draw implementation */
-                var renderer = new Graph.Renderer.Raphael('canvas', g, 600, 400);
-                renderer.draw();
-
-                redraw = function() {
-                    layouter.layout();
-                    renderer.draw();
-                };
-   };
-  </script>
+ <script src="graph_vis.js"></script>
  </head>
  <body>
-  <div id="canvas"></div>
    <div>
-            <button id="redraw" onclick="redraw();">redraw</button>
-        </div>
+          <button id="draw" onclick="drawGraphs(trees.length)">Draw graphs</button>
+  </div>
+
  </body>
-<<<<<<< HEAD
 </html>
-<!DOCTYPE html>
-<html>
-  <body>
-    <div id="paper"></div>
-  </body>
-</html>
+

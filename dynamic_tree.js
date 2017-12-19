@@ -2,6 +2,8 @@ var id = 0;
 
 var Node = function(parent) {
     this.id = id;
+    dparent = null;
+    dcost = null;
     id++ ;
 }
 
@@ -184,6 +186,85 @@ var PathCollection = function() {
     this.paths.splice(this.getIndex(path),1);
     return [path1, path2, x, y]
 
+  }
+
+  this.splice = function(p) {
+    v = this.tail(p).dparent
+    var q, r, x, y;
+    [q, r, x, y]= this.split(v)
+    if(!q) {
+      this.tail(q).dparent = v;
+      this.tail(q).dcost = x;
+    }
+    p = this.concatenate(p, this.path(v), this.tail(p).dcost)
+    if(!r)
+      return p;
+    else {
+      return this.concatenate(p, r, y)
+    }
+  }
+
+  this.expose = function(v) {
+    var q, r, x, y ;
+    [q, r, x, y] = this.split(v);
+    if(!q) {
+      this.tail(q).dparent = v;
+      this.tail(q).dcost = x;
+    }
+    if(!r)
+      p = this.path(v);
+    else {
+      p = this.concatenate(this.path(v), r, y)
+    }
+    while(!this.tail(p).dparent) {
+      p = this.splice(p)
+    }
+    return p;
+  }
+
+  this.parent = function(v) {
+    if(v.id === this.tail(this.path(v)).id)
+      return v.dparent;
+    else {
+      return this.after(v);
+    }
+  }
+
+  this.root = function(v) {
+    return this.tail(this.expose(v))
+  }
+
+  this.cost = function(v) {
+    if(v.id === this.tail(this.path(v)).id)
+      return v.dcost;
+    else {
+      return this.pcost(v);
+    }
+  }
+
+  this.mincost = function(v) {
+    return this.pmincost(this.expose(v));
+  }
+
+  this.update = function(v, x) {
+    this.pupdate(this.expose(v), x);
+  }
+
+  this.link = function(v, w, x) {
+    this.concatenate(this.path(v), this.expose(w), x)
+  }
+
+  this.cut = function(v) {
+    var p, q, x, y;
+    this.expose(v);
+    [p, q, x, y] = this.split(v);
+    v.dparent = null
+    return y
+  }
+
+  this.evert = function(v) {
+    this.reverse(this.expose(v));
+    v.dparent = null
   }
 
 }

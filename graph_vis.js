@@ -6,7 +6,7 @@ var Layout = Dracula.Layout.Spring
 
 var graph = new Graph()
 
-graph.addEdge('Banana', 'Apple')
+graph.addEdge('Banana', 'Apple', true)
 graph.addEdge('Apple', 'Kiwi')
 graph.addEdge('Apple', 'Dragonfruit')
 graph.addEdge('Dragonfruit', 'Banana')

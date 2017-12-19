@@ -34,13 +34,19 @@
 
     var g = new Graph();
 
-                g.addEdge("cherry", "apple");
-                g.addEdge("strawberry", "cherry");
-                g.addEdge("strawberry", "apple");
-                g.addEdge("strawberry", "tomato");
-                g.addEdge("tomato", "apple");
-                g.addEdge("cherry", "kiwi");
-                g.addEdge("tomato", "kiwi");
+    			g.addNode("apple");
+    			g.addNode("cherry");
+    			g.addNode("strawberry");
+    			g.addNode("tomato");
+    			g.addNode("kiwi");
+
+                g.addEdge("cherry", "apple", {label: 10, directed: true});
+                g.addEdge("strawberry", "cherry", {directed: true});
+                g.addEdge("strawberry", "apple", {directed: true});
+               // g.addEdge("strawberry", "tomato");
+               // g.addEdge("tomato", "apple");
+                g.addEdge("cherry", "kiwi", {directed: true});
+               // g.addEdge("tomato", "kiwi");
 
                 /* layout the graph using the Spring layout implementation */
                 var layouter = new Graph.Layout.Spring(g);
@@ -63,4 +69,11 @@
             <button id="redraw" onclick="redraw();">redraw</button>
         </div>
  </body>
+<<<<<<< HEAD
+</html>
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="paper"></div>
+  </body>
 </html>

@@ -507,5 +507,4 @@ PathCollection.prototype.toString = function pathCollectionToString() {
   for(var i=0; i < this.paths.length; i++){
     ret += this.paths[i] +'\n'
   }
-  return ret
 }

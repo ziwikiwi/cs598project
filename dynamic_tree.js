@@ -262,7 +262,20 @@ var PathCollection = function() {
       edgeIndex = path.getEdgeIndex(node, this.before(node))
       path1 = new Path()
       path1.nodes = path.nodes.slice(0, endIndex1 + 1)
-      path1.edges = path.edges.slice(0, edgeIndex)
+      path1.edges = []
+      for(var i=0; i < path1.nodes.length - 1; i++){
+        for(var j=0; j < path.edges.length; j++){
+          if(path.edges[j].nodes[0].id === path1.nodes[i].id && path.edges[j].nodes[1].id === path1.nodes[i+1].id){
+            path1.edges.push(path.edges[j])
+            break
+          }
+
+          if(path.edges[j].nodes[1].id === path1.nodes[i].id && path.edges[j].nodes[0].id === path1.nodes[i+1].id){
+            path1.edges.push(path.edges[j])
+            break
+          }
+        }
+      }
       x = path.edges[edgeIndex].cost;
       path.edges.splice(edgeIndex, 1)
       this.paths.push(path1)
@@ -277,7 +290,20 @@ var PathCollection = function() {
       edgeIndex = path.getEdgeIndex(node, this.after(node))
       path2 = new Path()
       path2.nodes = path.nodes.slice(startIndex2);
-      path2.edges = path.edges.slice(edgeIndex + 1);
+      path2.edges = [];
+      for(var i=0; i < path2.nodes.length - 1; i++){
+        for(var j=0; j < path.edges.length; j++){
+          if(path.edges[j].nodes[0].id === path2.nodes[i].id && path.edges[j].nodes[1].id === path2.nodes[i+1].id){
+            path2.edges.push(path.edges[j])
+            break
+          }
+
+          if(path.edges[j].nodes[1].id === path2.nodes[i].id && path.edges[j].nodes[0].id === path2.nodes[i+1].id){
+            path2.edges.push(path.edges[j])
+            break
+          }
+        }
+      }
       y = path.edges[edgeIndex].cost;
       path.edges.splice(edgeIndex, 1)
       this.paths.push(path2)

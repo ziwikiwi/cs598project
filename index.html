@@ -22,5 +22,47 @@
           <button id="drawPaths" onclick="expose(parseInt(document.getElementById('node1').value))">Expose Node</button>
           <button id="splice" onclick="splice(parseInt(document.getElementById('node1').value),parseInt(document.getElementById('node2').value))">Splice Path</button>
   </div>
+  <script>
+  window.onload = function(){
+
+
+    var pathCollection = new PathCollection()
+    var n = new Node(null);
+    nodes = []
+    var buildTree = function (levels, maxdegree) {
+      var n1 = new Node(null)
+      nodes.push(n1)
+      buildTreeHelper(n1, levels, maxdegree);
+      //Each edgeless node has a solid edge of 0
+      for (var i = 0; i < nodes.length; i++){
+        var path = new Path();
+        path.addNode(nodes[i]);
+        pathCollection.addPath(path);
+      }
+    };
+
+    var buildTreeHelper = function (rootNode, levels, maxdegree) {
+      if (levels == 0) {
+        return;
+      }
+
+      for (var i = 0; i < maxdegree; i++) {
+        var child = new Node(null);
+        child.setDashedParent(rootNode, 10);
+        nodes.push(child);
+        buildTreeHelper(child, levels-1, maxdegree);
+      }
+    }
+
+    buildTree(3,2)
+    pathCollection.expose(nodes[6])
+    pathCollection.expose(nodes[5])
+    pathCollection.expose(nodes[6])
+    pathCollection.expose(nodes[5])
+    pathCollection.expose(nodes[6])
+    console.log(pathCollection + '')
+
+  }
+  </script>
  </body>
 </html>

@@ -7,6 +7,11 @@ var Node = function(parent) {
     this.dparent = null;
     this.dcost = null;
     id++ ;
+
+    this.setDashedParent = function(dparent, dcost){
+      this.dparent = dparent;
+      this.dcost = dcost;
+    }
 }
 
 var Edge = function(cost, node1, node2) {

@@ -80,7 +80,7 @@ Path.prototype.toString = function pathToString() {
   var ret = ''
   if(this.edges.length > 0) {
     for(var i=0; i < this.nodes.length - 1; i++){
-      if(i ==0) {
+      if(i ===0) {
         ret += this.nodes[i] + '-(' + this.edges[this.getEdgeIndex(this.nodes[i], this.nodes[i+1])].cost + ')-'
       }
       else {
@@ -208,12 +208,21 @@ var PathCollection = function() {
 
   this.pmincost = function(path) {
     min_cost = 9007199254740992;  // INT.max
+    min_vertex = null
     for(var i=0; i < path.edges.length; i++){
       cost = path.edges[i].cost
-      if(cost < min_cost)
+      if(cost < min_cost) {
         min_cost = cost;
+        if(path.edges[i].nodes[1].id === this.after(path.edges[i].nodes[0]).id){
+          min_vertex = path.edges[i].nodes[0]
+        }
+        else {
+          min_vertex = path.edges[i].nodes[1]
+        }
+      }
+
     }
-    return min_cost
+    return min_vertex
   }
 
   this.pupdate = function(path, x) {
@@ -238,7 +247,8 @@ var PathCollection = function() {
   this.split = function(node) {
     path = this.path(node);
     var path1, path2 ;
-    if(node.id == this.head(path).id) {
+
+    if(node.id === this.head(path).id) {
       path1 = null;
       x = null
     }
@@ -247,13 +257,13 @@ var PathCollection = function() {
       edgeIndex = path.getEdgeIndex(node, this.before(node))
       path1 = new Path()
       path1.nodes = path.nodes.slice(0, endIndex1 + 1)
-      path1.edges = path.edges.slice(0, edgeIndex -1)
+      path1.edges = path.edges.slice(0, edgeIndex)
       x = path.edges[edgeIndex].cost;
       path.edges.splice(edgeIndex, 1)
       this.paths.push(path1)
     }
 
-    if(node.id == this.tail(path).id) {
+    if(node.id === this.tail(path).id) {
       path2 = null;
       y = null;
     }
@@ -280,13 +290,17 @@ var PathCollection = function() {
     v = this.tail(p).dparent
     var q, r, x, y;
     [q, r, x, y]= this.split(v)
+
     if(q != null) {
       this.tail(q).dparent = v;
       this.tail(q).dcost = x;
+
     }
     p = this.concatenate(p, this.path(v), this.tail(p).dcost)
-    if(r == null)
+    if(r === null) {
+
       return p;
+    }
     else {
       return this.concatenate(p, r, y)
     }
@@ -299,11 +313,13 @@ var PathCollection = function() {
       this.tail(q).dparent = v;
       this.tail(q).dcost = x;
     }
-    if(r == null)
+    if(r === null) {
       p = this.path(v);
+    }
     else {
       p = this.concatenate(this.path(v), r, y)
     }
+
     while(this.tail(p).dparent != null) {
       p = this.splice(p)
     }
@@ -313,7 +329,7 @@ var PathCollection = function() {
   this.nca = function(v, w) {
     nodes1 = this.expose(v).nodes
     nodes2 = this.expose(w).nodes
-    for(i = nodes1.length - 1, j = nodes2.length - 1; i > -1 && j > -1 && nodes1[i].id == nodes2[j].id; i--, j--);
+    for(i = nodes1.length - 1, j = nodes2.length - 1; i > -1 && j > -1 && nodes1[i].id === nodes2[j].id; i--, j--);
     return nodes1[i+1]
   }
 

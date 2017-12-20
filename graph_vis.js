@@ -77,12 +77,26 @@ function expose(node) {
 			}
 		}
 	}
+	console.log(tree.pathCollection + '');
 	tree.redraw();
 }
 
 function splice(node1, node2) {
-	
+	for (var i = 0; i < tree.pathCollection.paths.length; i++) {
+		var path = tree.pathCollection.paths[i];
+		if ((tree.pathCollection.head(path) && tree.pathCollection.head(path).id == node1) && 
+			(tree.pathCollection.tail(path) && tree.pathCollection.tail(path).id == node2))
+		{
+			tree.pathCollection.splice(path);
+			break;
+		}
+	}
+	tree.redraw();
+}
 
+
+function root() {
+	
 }
 
 

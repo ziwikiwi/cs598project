@@ -297,6 +297,7 @@ var PathCollection = function() {
     [q, r, x, y]= this.split(v)
 
     if(q != null) {
+      console.log(q);
       this.tail(q).dparent = v;
       this.tail(q).dcost = x;
 
@@ -409,7 +410,7 @@ var Tree = function () {
       path.addNode(this.nodes[i]);
       this.pathCollection.addPath(path);
     }
-    console.log(this.pathCollection);
+    console.log(this.pathCollection + '');
   };
 
   this.buildTreeHelper = function (rootNode, levels, maxdegree) {
@@ -420,14 +421,14 @@ var Tree = function () {
     //var numChildren = Math.ceil(Math.random() * maxdegree);
     var numChildren = maxdegree;
     for (var i = 0; i < numChildren; i++) {
-      var child = new Node(rootNode);
+      var child = new Node(null);
       child.setDashedParent(rootNode, 20);
       child.nodeInfo = {
         level: levels-1,
         childIndex: i
       };
       this.nodes.push(child);
-      var childEdge = new Edge(20, child, rootNode);
+      var childEdge = new Edge(20, rootNode, child);
       //incoming edges
       rootNode.incomingEdges.push(childEdge);
       this.edges.push(childEdge);
@@ -486,7 +487,6 @@ var Tree = function () {
         }
       }
     }
-    // console.log(this.pathCollection);
   }
 
   this.redraw = function() {

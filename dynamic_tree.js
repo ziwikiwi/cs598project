@@ -12,11 +12,20 @@ var Node = function(parent) {
       this.dparent = dparent;
       this.dcost = dcost;
     }
+
+}
+
+Node.prototype.toString = function nodeToString() {
+  return this.id
 }
 
 var Edge = function(cost, node1, node2) {
     this.cost = cost;
     this.nodes = [ node1, node2 ];
+}
+
+Edge.prototype.toString = function edgeToString() {
+  return this.nodes[0] + '-(' + this.cost.toString() + ')-' + this.nodes[1]
 }
 
 var Path = function() {
@@ -65,6 +74,25 @@ var Path = function() {
 
       return -1;
     };
+}
+
+Path.prototype.toString = function pathToString() {
+  var ret = ''
+  if(this.edges.length > 0) {
+    for(var i=0; i < this.nodes.length - 1; i++){
+      if(i ==0) {
+        ret += this.nodes[i] + '-(' + this.edges[this.getEdgeIndex(this.nodes[i], this.nodes[i+1])].cost + ')-'
+      }
+      else {
+        ret +=  this.nodes[i] + '-(' + this.edges[this.getEdgeIndex(this.nodes[i], this.nodes[i+1])].cost + ')-'
+      }
+
+    }
+    return ret + this.nodes[this.nodes.length-1]
+  }
+  else {
+    return this.nodes[0].toString()
+  }
 }
 
 var PathCollection = function() {
@@ -282,6 +310,13 @@ var PathCollection = function() {
     return p;
   }
 
+  this.nca = function(v, w) {
+    nodes1 = this.expose(v).nodes
+    nodes2 = this.expose(w).nodes
+    for(i = nodes1.length - 1, j = nodes2.length - 1; i > -1 && j > -1 && nodes1[i].id == nodes2[j].id; i--, j--);
+    return nodes1[i+1]
+  }
+
   this.parent = function(v) {
     if(v.id === this.tail(this.path(v)).id)
       return v.dparent;
@@ -440,4 +475,12 @@ var Tree = function () {
     }
   }
 
+}
+
+PathCollection.prototype.toString = function pathCollectionToString() {
+  ret = ''
+  for(var i=0; i < this.paths.length; i++){
+    ret += this.paths[i] +'\n'
+  }
+  return ret
 }

@@ -301,6 +301,10 @@ Graph.Renderer.Raphael = function(element, graph, width, height) {
     this.draw();
 };
 Graph.Renderer.Raphael.prototype = {
+
+    clear: function() {
+        this.r.clear();
+    },
     translate: function(point) {
         return [
             (point[0] - this.graph.layoutMinX) * this.factorX + this.radius,
@@ -321,6 +325,7 @@ Graph.Renderer.Raphael.prototype = {
             this.drawNode(this.graph.nodes[i]);
         }
         for (var i = 0; i < this.graph.edges.length; i++) {
+
             this.drawEdge(this.graph.edges[i]);
         }
     },
@@ -328,7 +333,7 @@ Graph.Renderer.Raphael.prototype = {
     drawNode: function(node) {
         var point = this.translate([node.layoutPosX, node.layoutPosY]);
         node.point = point;
-
+        node.shape = null;
         /* if node has already been drawn, move the nodes */
         if(node.shape) {
             var oBBox = node.shape.getBBox();
@@ -362,7 +367,7 @@ Graph.Renderer.Raphael.prototype = {
 
         shape = node.render(this.r, node).hide();
 
-        shape.attr({"fill-opacity": .6});
+        //shape.attr({"fill-opacity": .6});
         /* re-reference to the node an element belongs to, needed for dragging all elements of a node */
         shape.items.forEach(function(item){ item.set = shape; item.node.style.cursor = "move"; });
         shape.mousedown(this.dragger);
@@ -550,7 +555,6 @@ Graph.Layout.Ordered.prototype = {
             var counter = 0;
             for (i in this.order) {
                 var node = this.order[i];
-                console.log(node);
                 node.layoutPosX = counter;
                 node.layoutPosY = node.level;
                 counter++;

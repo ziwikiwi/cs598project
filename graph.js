@@ -160,7 +160,6 @@ EdgeFactory.prototype = {
 var Graph = function() {
     this.nodes = {};
     this.edges = [];
-    this.edgestrings = {};
     this.snapshots = []; // previous graph states TODO to be implemented
     this.edgeFactory = new EdgeFactory();
 };
@@ -180,22 +179,17 @@ Graph.prototype = {
         return this.nodes[id];
     },
 
-    findNode: function(id) {
-        return this.nodes[id];
-    },
-
     addEdge: function(source, target, style) {
-        var s = this.nodes[source];
-        var t = this.nodes[target];
-        var edge = this.edgeFactory.build(s, t); 
+        var s = this.addNode(source);
+        var t = this.addNode(target);
+        var edge = this.edgeFactory.build(s, t);
         jQuery.extend(edge.style,style);
         s.edges.push(edge);
         this.edges.push(edge);
         // NOTE: Even directed edges are added to both nodes.
         t.edges.push(edge);
-        return edge;
     },
-
+    
     /* TODO to be implemented
      * Preserve a copy of the graph state (nodes, positions, ...)
      * @comment     a comment describing the state
@@ -331,15 +325,6 @@ Graph.Renderer.Raphael.prototype = {
         }
     },
 
-    redraw: function() {
-        for (i in this.graph.nodes) {
-            this.drawNode(this.graph.nodes[i]);
-        }
-        for (var i = 0; i < this.graph.edges.length; i++) {
-            this.drawEdge(this.graph.edges[i]);
-        }
-    },
-
     drawNode: function(node) {
         var point = this.translate([node.layoutPosX, node.layoutPosY]);
         node.point = point;
@@ -388,7 +373,7 @@ Graph.Renderer.Raphael.prototype = {
         node.hidden || shape.show();
         node.shape = shape;
     },
-    drawEdge: function(edge, refresh=false) {
+    drawEdge: function(edge) {
         /* if this edge already exists the other way around and is undirected */
         if(edge.backedge)
             return;
@@ -565,8 +550,9 @@ Graph.Layout.Ordered.prototype = {
             var counter = 0;
             for (i in this.order) {
                 var node = this.order[i];
+                console.log(node);
                 node.layoutPosX = counter;
-                node.layoutPosY = Math.random();
+                node.layoutPosY = node.level;
                 counter++;
             }
     },

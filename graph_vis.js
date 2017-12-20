@@ -3,6 +3,9 @@
 var height = 500;
 var canvasses = [];
 var trees = [];
+var tree = new Tree();
+var drawnPaths = false;
+var drawnTree = false;
 
 function getCanvasWidth(numberOfTrees) {
 	console.log(window.innerWidth/numberOfTrees);
@@ -11,10 +14,11 @@ function getCanvasWidth(numberOfTrees) {
 
 function pathStuff() {
 
+	/*
     var pathCollection = new PathCollection();
     trees.push(pathCollection);
     pathCollection.drawPaths(0);
-    
+    */
     //console.log(pathCollection.split(n3));
     //console.log(pathCollection);
 
@@ -47,11 +51,24 @@ function addPath(collection, length){
 }
 
 function buildTree(levels, maxdegree) {
-	var tree = new Tree();
-	tree.buildTree(levels, maxdegree);
-	tree.setupGraph(0);
-	tree.splitTree();
-	tree.pathCollection.drawPaths(1);
+	if (!drawnTree) {
+		tree.buildTree(levels, maxdegree);
+		tree.setupGraph(0);
+		//tree.splitTree();
+		drawnTree = true;
+	}
+	else {
+		console.log("redrawing");
+		tree.redraw();
+	}
+
 }
+
+function drawPaths() {
+	console.log(tree.pathCollection.paths[2]);
+	tree.pathCollection.expose(tree.pathCollection.paths[2].nodes[0]);
+	console.log(tree.pathCollection);
+}
+
 
 

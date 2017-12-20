@@ -4,14 +4,29 @@ var id = 0;
 var Node = function(parent) {
     this.id = id;
     this.incomingEdges = [];
-    dparent = null;
-    dcost = null;
+    this.nodeInfo = {};
+    this.dparent = null;
+    this.dcost = null;
     id++ ;
+
+    this.setDashedParent = function(dparent, dcost){
+      this.dparent = dparent;
+      this.dcost = dcost;
+    }
+
+}
+
+Node.prototype.toString = function nodeToString() {
+  return this.id
 }
 
 var Edge = function(cost, node1, node2) {
     this.cost = cost;
     this.nodes = [ node1, node2 ];
+}
+
+Edge.prototype.toString = function edgeToString() {
+  return this.nodes[0] + '-(' + this.cost.toString() + ')-' + this.nodes[1]
 }
 
 var Path = function() {
@@ -62,6 +77,25 @@ var Path = function() {
     };
 }
 
+Path.prototype.toString = function pathToString() {
+  var ret = ''
+  if(this.edges.length > 0) {
+    for(var i=0; i < this.nodes.length - 1; i++){
+      if(i ==0) {
+        ret += this.nodes[i] + '-(' + this.edges[this.getEdgeIndex(this.nodes[i], this.nodes[i+1])].cost + ')-'
+      }
+      else {
+        ret +=  this.nodes[i] + '-(' + this.edges[this.getEdgeIndex(this.nodes[i], this.nodes[i+1])].cost + ')-'
+      }
+
+    }
+    return ret + this.nodes[this.nodes.length-1]
+  }
+  else {
+    return this.nodes[0].toString()
+  }
+}
+
 var PathCollection = function() {
   this.paths = [];
   this.graph = new Graph();
@@ -82,6 +116,7 @@ var PathCollection = function() {
   };
 
   this.populateGraph = function () {
+    this.graph = new Graph();
     for (var i = 0; i < this.paths.length; i++) {
         var nodes = this.paths[i].nodes;
         for (var j = 0; j < nodes.length; j++) {
@@ -104,7 +139,7 @@ var PathCollection = function() {
       if (oldDiv) {
         d.body.removeChild(oldDiv);
     }
-    
+
     var canvasName = 'canvas' + i;
     var canvasDiv = d.createElement("div");
     canvasDiv.className = "graph";
@@ -112,13 +147,13 @@ var PathCollection = function() {
     this.canvasName = canvasName;
     d.body.appendChild(canvasDiv);
 
-    this.layouter = new Graph.Layout.Spring(this.graph);
+    this.layouter = new Graph.Layout.Ordered(this.graph, this.graph.nodes);
     this.layouter.layout();
 
     this.renderer = new Graph.Renderer.Raphael(canvasName, this.graph, 800, 600);
     this.renderer.draw();
 };
-  
+
   this.redraw = function() {
     this.populateGraph();
     this.layouter.layout();
@@ -236,6 +271,9 @@ var PathCollection = function() {
     }
 
     this.paths.splice(this.getIndex(path),1);
+    path = new Path()
+    path.addNode(node)
+    this.paths.push(path)
     return [path1, path2, x, y]
 
   }
@@ -244,12 +282,12 @@ var PathCollection = function() {
     v = this.tail(p).dparent
     var q, r, x, y;
     [q, r, x, y]= this.split(v)
-    if(!q) {
+    if(q != null) {
       this.tail(q).dparent = v;
       this.tail(q).dcost = x;
     }
     p = this.concatenate(p, this.path(v), this.tail(p).dcost)
-    if(!r)
+    if(r == null)
       return p;
     else {
       return this.concatenate(p, r, y)
@@ -259,19 +297,26 @@ var PathCollection = function() {
   this.expose = function(v) {
     var q, r, x, y ;
     [q, r, x, y] = this.split(v);
-    if(!q) {
+    if(q != null) {
       this.tail(q).dparent = v;
       this.tail(q).dcost = x;
     }
-    if(!r)
+    if(r == null)
       p = this.path(v);
     else {
       p = this.concatenate(this.path(v), r, y)
     }
-    while(!this.tail(p).dparent) {
+    while(this.tail(p).dparent != null) {
       p = this.splice(p)
     }
     return p;
+  }
+
+  this.nca = function(v, w) {
+    nodes1 = this.expose(v).nodes
+    nodes2 = this.expose(w).nodes
+    for(i = nodes1.length - 1, j = nodes2.length - 1; i > -1 && j > -1 && nodes1[i].id == nodes2[j].id; i--, j--);
+    return nodes1[i+1]
   }
 
   this.parent = function(v) {
@@ -332,6 +377,10 @@ var Tree = function () {
   this.renderer = null;
 
   this.buildTree = function (levels, maxdegree) {
+    this.rootNode.nodeInfo = {
+      level: levels,
+      childIndex: -1
+    };
     this.nodes.push(this.rootNode);
     this.buildTreeHelper(this.rootNode, levels, maxdegree);
     //Each edgeless node has a solid edge of 0
@@ -340,6 +389,7 @@ var Tree = function () {
       path.addNode(this.nodes[i]);
       this.pathCollection.addPath(path);
     }
+    console.log(this.pathCollection);
   };
 
   this.buildTreeHelper = function (rootNode, levels, maxdegree) {
@@ -351,7 +401,12 @@ var Tree = function () {
     var numChildren = maxdegree;
     for (var i = 0; i < numChildren; i++) {
       var child = new Node(rootNode);
+      child.nodeInfo = {
+        level: levels-1,
+        childIndex: i
+      };
       this.nodes.push(child);
+
       var childEdge = new Edge(20, child, rootNode);
       //incoming edges
       rootNode.incomingEdges.push(childEdge);
@@ -368,7 +423,7 @@ var Tree = function () {
       if (oldDiv) {
         d.body.removeChild(oldDiv);
     }
-    
+
     var canvasName = 'canvas' + i;
     var canvasDiv = d.createElement("div");
     canvasDiv.className = "graph";
@@ -376,7 +431,7 @@ var Tree = function () {
     this.canvasName = canvasName;
     d.body.appendChild(canvasDiv);
 
-    this.layouter = new Graph.Layout.Spring(this.graph);
+    this.layouter = new Graph.Layout.Ordered(this.graph, this.graph.nodes);
     this.layouter.layout();
 
     this.renderer = new Graph.Renderer.Raphael(canvasName, this.graph, 800, 600);
@@ -401,7 +456,7 @@ var Tree = function () {
         var prevNode = selectedEdge.nodes[0];
         //check if new pach can connect to head of existing path
         var pathContainingNode = this.pathCollection.path(prevNode);
-        console.log(pathContainingNode);
+        // console.log(pathContainingNode);
 
         if (pathContainingNode && this.pathCollection.tail(pathContainingNode) == prevNode) {
           //add the node
@@ -410,7 +465,7 @@ var Tree = function () {
         }
       }
     }
-    console.log(this.pathCollection);
+    // console.log(this.pathCollection);
   }
 
   this.redraw = function() {
@@ -420,16 +475,37 @@ var Tree = function () {
   }
 
   this.drawGraph = function() {
+    this.graph = new Graph();
     var nodes = this.nodes;
       for (var j = 0; j < nodes.length; j++) {
         var node = nodes[j];
-        this.graph.addNode(node.id);
+        this.graph.addNode(node.id, node.nodeInfo);
       }
     var edges = this.edges;
       for (var j = 0; j < edges.length; j++) {
         var edge = edges[j];
-        this.graph.addEdge(edge.nodes[0].id, edge.nodes[1].id, {stroke: "#FE1B2E", "stroke-dasharray": "-", directed: true, label: edge.cost})
+        var containsEdge = false;
+        this.pathCollection.paths.forEach((path) => {
+            if (path.getEdgeIndex(edge.nodes[0], edge.nodes[1]) > 0) {
+              containsEdge = true;
+              return;
+            }
+        });
+        if (containsEdge) {
+            this.graph.addEdge(edge.nodes[0].id, edge.nodes[1].id, {stroke: "#00FF99", "stroke-dasharray": "-", directed: true, label: edge.cost})
+        }
+        else {
+            this.graph.addEdge(edge.nodes[0].id, edge.nodes[1].id, {stroke: "#FE1B2E", "stroke-dasharray": "-", directed: true, label: edge.cost})
+        }
     }
   }
 
+}
+
+PathCollection.prototype.toString = function pathCollectionToString() {
+  ret = ''
+  for(var i=0; i < this.paths.length; i++){
+    ret += this.paths[i] +'\n'
+  }
+  return ret
 }

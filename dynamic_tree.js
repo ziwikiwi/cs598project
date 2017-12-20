@@ -4,8 +4,8 @@ var id = 0;
 var Node = function(parent) {
     this.id = id;
     this.incomingEdges = [];
-    dparent = null;
-    dcost = null;
+    this.dparent = null;
+    this.dcost = null;
     id++ ;
 }
 
@@ -104,7 +104,7 @@ var PathCollection = function() {
       if (oldDiv) {
         d.body.removeChild(oldDiv);
     }
-    
+
     var canvasName = 'canvas' + i;
     var canvasDiv = d.createElement("div");
     canvasDiv.className = "graph";
@@ -118,7 +118,7 @@ var PathCollection = function() {
     this.renderer = new Graph.Renderer.Raphael(canvasName, this.graph, 800, 600);
     this.renderer.draw();
 };
-  
+
   this.redraw = function() {
     this.populateGraph();
     this.layouter.layout();
@@ -236,6 +236,9 @@ var PathCollection = function() {
     }
 
     this.paths.splice(this.getIndex(path),1);
+    path = new Path()
+    path.addNode(node)
+    this.paths.push(path)
     return [path1, path2, x, y]
 
   }
@@ -244,12 +247,12 @@ var PathCollection = function() {
     v = this.tail(p).dparent
     var q, r, x, y;
     [q, r, x, y]= this.split(v)
-    if(!q) {
+    if(q != null) {
       this.tail(q).dparent = v;
       this.tail(q).dcost = x;
     }
     p = this.concatenate(p, this.path(v), this.tail(p).dcost)
-    if(!r)
+    if(r == null)
       return p;
     else {
       return this.concatenate(p, r, y)
@@ -259,16 +262,16 @@ var PathCollection = function() {
   this.expose = function(v) {
     var q, r, x, y ;
     [q, r, x, y] = this.split(v);
-    if(!q) {
+    if(q != null) {
       this.tail(q).dparent = v;
       this.tail(q).dcost = x;
     }
-    if(!r)
+    if(r == null)
       p = this.path(v);
     else {
       p = this.concatenate(this.path(v), r, y)
     }
-    while(!this.tail(p).dparent) {
+    while(this.tail(p).dparent != null) {
       p = this.splice(p)
     }
     return p;
@@ -368,7 +371,7 @@ var Tree = function () {
       if (oldDiv) {
         d.body.removeChild(oldDiv);
     }
-    
+
     var canvasName = 'canvas' + i;
     var canvasDiv = d.createElement("div");
     canvasDiv.className = "graph";
@@ -401,7 +404,7 @@ var Tree = function () {
         var prevNode = selectedEdge.nodes[0];
         //check if new pach can connect to head of existing path
         var pathContainingNode = this.pathCollection.path(prevNode);
-        console.log(pathContainingNode);
+        // console.log(pathContainingNode);
 
         if (pathContainingNode && this.pathCollection.tail(pathContainingNode) == prevNode) {
           //add the node
@@ -410,7 +413,7 @@ var Tree = function () {
         }
       }
     }
-    console.log(this.pathCollection);
+    // console.log(this.pathCollection);
   }
 
   this.redraw = function() {

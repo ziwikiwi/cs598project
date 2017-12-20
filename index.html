@@ -11,10 +11,16 @@
  </head>
  <body>
    <div>
-          <button id="draw" onclick="pathStuff()">Draw graphs</button>
+          <button id="draw" onclick="pathStuff()">Show Paths</button>
+          <!--
           <input type="text" id="numPaths" value="0">
           <button id="addPath" onclick="addPath(0,parseInt(document.getElementById('numPaths').value))">Add Path</button>
-          <button id="addPath" onclick="buildTree(3,2)">Initialize Tree</button>
+      		-->
+          <button id="buildTree" onclick="buildTree(2,2)">Initialize Tree</button>
+          <input type="text" id="node1" value="0">
+          <input type="text" id="node2" value="0">
+          <button id="drawPaths" onclick="expose(parseInt(document.getElementById('node1').value))">Expose Node</button>
+          <button id="splice" onclick="splice(parseInt(document.getElementById('node1').value),parseInt(document.getElementById('node2').value))">Splice Path</button>
   </div>
   <script>
   window.onload = function(){

@@ -3,6 +3,9 @@
 var height = 500;
 var canvasses = [];
 var trees = [];
+var tree = new Tree();
+var drawnPaths = false;
+var drawnTree = false;
 
 function getCanvasWidth(numberOfTrees) {
 	console.log(window.innerWidth/numberOfTrees);
@@ -11,13 +14,16 @@ function getCanvasWidth(numberOfTrees) {
 
 function pathStuff() {
 
-    var pathCollection = new PathCollection();
-    trees.push(pathCollection);
-    pathCollection.drawPaths(0);
-    
-    //console.log(pathCollection.split(n3));
-    //console.log(pathCollection);
-
+	if (!drawnPaths) {
+		var pathsTitle = document.createElement("h2");
+		pathsTitle.innerHTML = "Path Visualization";
+		document.body.appendChild(pathsTitle);
+		tree.pathCollection.drawPaths(1);
+		drawnPaths = true;
+	}
+    else {
+    	tree.pathCollection.redraw();
+    }
 }
 
 /*Adds a new path with some nodes to our collection.
@@ -47,11 +53,37 @@ function addPath(collection, length){
 }
 
 function buildTree(levels, maxdegree) {
-	var tree = new Tree();
-	tree.buildTree(levels, maxdegree);
-	tree.setupGraph(0);
-	tree.splitTree();
-	tree.pathCollection.drawPaths(1);
+	if (!drawnTree) {
+		var pathsTitle = document.createElement("h2");
+		pathsTitle.innerHTML = "Tree Visualization";
+		document.body.appendChild(pathsTitle);
+		tree.buildTree(levels, maxdegree);
+		tree.setupGraph(0);
+		//tree.splitTree();
+		drawnTree = true;
+	}
+	else {
+		tree.redraw();
+	}
 }
+
+function expose(node) {
+	var index = node;
+	for (var i = 0; i < tree.pathCollection.paths.length; i++) {
+		for (var j = 0; j < tree.pathCollection.paths[i].nodes.length; j++) {
+			if (tree.pathCollection.paths[i].nodes[j].id == index) {
+				tree.pathCollection.expose(tree.pathCollection.paths[i].nodes[j]);
+				break;
+			}
+		}
+	}
+	tree.redraw();
+}
+
+function splice(node1, node2) {
+	
+
+}
+
 
 
